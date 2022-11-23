@@ -10,10 +10,12 @@ import {
   Switch
 } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
-import AppLoading from "expo-app-loading";
 import * as Font from "expo-font";
 
 import firebase from "firebase";
+
+import * as SplashScreen from 'expo-splash-screen';
+SplashScreen.preventAutoHideAsync();
 
 let customFonts = {
   "Bubblegum-Sans": require("../assets/fonts/BubblegumSans-Regular.ttf")
@@ -26,7 +28,6 @@ export default class Profile extends Component {
       fontsLoaded: false,
       isEnabled: false,
       light_theme: true,
-      profile_image: "",
       name: ""
     };
   }
@@ -63,20 +64,19 @@ export default class Profile extends Component {
       .on("value", function (snapshot) {
         theme = snapshot.val().current_theme;
         name = `${snapshot.val().first_name} ${snapshot.val().last_name}`;
-        image = snapshot.val().profile_picture;
+
       });
     this.setState({
       light_theme: theme === "light" ? true : false,
       isEnabled: theme === "light" ? false : true,
       name: name,
-      profile_image: image
+
     });
   }
 
   render() {
-    if (!this.state.fontsLoaded) {
-      return <AppLoading />;
-    } else {
+    if (this.state.fontsLoaded) {
+      SplashScreen.hideAsync();
       return (
         <View
           style={
@@ -105,8 +105,8 @@ export default class Profile extends Component {
           </View>
           <View style={styles.screenContainer}>
             <View style={styles.profileImageContainer}>
-              <Image
-                source={{ uri: this.state.profile_image }}
+            <Image
+                source={require("../assets/profile_img.png")}
                 style={styles.profileImage}
               ></Image>
               <Text
